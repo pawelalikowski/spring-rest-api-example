@@ -1,4 +1,3 @@
-//based on https://spring.io/guides/tutorials/spring-boot-oauth2/
 package com.example;
 
 import java.security.Principal;
