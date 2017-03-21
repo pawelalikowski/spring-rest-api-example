@@ -1,0 +1,5 @@
+image: openjdk:8-jdk
+
+build:
+  script:
+    - ./gradlew build
