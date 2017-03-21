@@ -1,0 +1,462 @@
+{
+	"variables": [],
+	"info": {
+		"name": "API SERVER",
+		"_postman_id": "ff1ed6a9-2371-a9d2-f216-80320d45468b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Token http://localhost:8080/oauth/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"//var auth0CookieName = 'auth0';",
+							"//var auth0Cookie = postman.getResponseCookie(auth0CookieName);",
+							"",
+							"tests[\"Body contains access_token\"] = responseBody.has(\"access_token\");",
+							"tests[\"Body contains token_type\"] = responseBody.has(\"token_type\");",
+							"tests[\"Body contains expires_in\"] = responseBody.has(\"expires_in\");",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", jsonData.access_token);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/oauth/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Basic YWNtZTphY21lc2VjcmV0",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "Login using username-password connection"
+			},
+			"response": []
+		},
+		{
+			"name": "GET Me http://localhost:8080/me",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/me",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Users http://localhost:8080/users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/users",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "GET User http://localhost:8080/users/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/users/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "Create User http://localhost:8080/users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/users",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Chuck\",\n    \"password\": \"Chuck\",\n    \"email\": \"chuck@communications.com\"\n }"
+				},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "Update User http://localhost:8080/users/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/users/1",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Chuck\",\n    \"password\": \"Chuck\",\n    \"email\": \"chuck@communications.com\"\n }"
+				},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "Patch User http://localhost:8080/users/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/users/2",
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"Chuck\"\n}"
+				},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Books http://localhost:8080/books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/books",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "GET Book http://localhost:8080/books/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/books/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Book http://localhost:8080/books",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/books",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Chuck\",\n    \"author\": \"Chuck\"\n }"
+				},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		},
+		{
+			"name": "Update Book http://localhost:8080/books/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/books/1",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Chuck\",\n    \"author\": \"Chuck\"\n }"
+				},
+				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+			},
+			"response": []
+		}
+	]
+}
