@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import com.example.Services.UserService;
 import com.example.models.User;
 import com.example.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,16 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RepositoryRestController
 public class UserController {
 
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/index")
     public @ResponseBody ResponseEntity<?> getProducers() {
-        List<User> users = (List<User>) userRepository.findAll();
+        List<User> users = (List<User>) userService.findAll();
 
         //
         // do some intermediate processing, logging, etc. with the users
