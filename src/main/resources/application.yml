@@ -37,3 +37,4 @@ github:
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG

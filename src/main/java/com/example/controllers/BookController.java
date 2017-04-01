@@ -51,5 +51,4 @@ public class BookController {
         bookRepository.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }
