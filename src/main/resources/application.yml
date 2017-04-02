@@ -8,6 +8,8 @@ security:
     authorization:
       check-token-access: 'permitAll()'
       token-key-access: 'permitAll()'
+    resource:
+      token-type: jwt
   user:
     password: password
 

@@ -1,16 +1,21 @@
 package com.example.conf;
 
+import com.example.models.User;
+import com.example.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Optional;
 
 
 @Configuration
@@ -19,15 +24,31 @@ import java.util.Map;
 @RestController
 public class AuthorizationServer {
 
-    @RequestMapping({ "/user", "/me" })
-    public Map<String, String> user(Principal principal) {
-        Map<String, String> map = new LinkedHashMap<>();
-        HashMap<String, String> userDetails = (HashMap) ((OAuth2Authentication) principal).getUserAuthentication().getDetails();
-        map.put("name", principal.getName());
-        map.put("email", userDetails.get("email"));
-        return map;
+    private final UserRepository repository;
+
+    @Autowired
+    public AuthorizationServer(UserRepository repository) {
+        this.repository = repository;
     }
 
+
+    @RequestMapping({ "/user", "/me" })
+    public ResponseEntity<User> user(Principal principal) {
+        String username = (String) ((OAuth2Authentication) principal).getUserAuthentication().getPrincipal();
+        Optional<User> user = repository.findByUsername(username);
+        return user.map(user1 -> ResponseEntity.ok().body(user1)).orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+
+    @Bean
+    public JwtTokenStore jwtStore(JwtAccessTokenConverter jwtAccessTokenConverter) {
+        return new JwtTokenStore(jwtAccessTokenConverter);
+    }
+
+    @Bean
+    public JwtAccessTokenConverter jwtConverter() {
+        return new JwtAccessTokenConverter();
+    }
 //    @Override
 //    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 //        security.allowFormAuthenticationForClients();
