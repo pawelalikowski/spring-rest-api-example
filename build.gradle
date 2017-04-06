@@ -33,6 +33,7 @@ dependencies {
 	compile(group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.1.0.RELEASE')
 	compile(group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.7.RELEASE')
 	compile(group: 'com.h2database', name: 'h2', version: '1.4.194')
+	compile group: 'com.github.javafaker', name: 'javafaker', version: '0.13'
 
 	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
 }
