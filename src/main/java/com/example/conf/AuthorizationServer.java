@@ -3,8 +3,8 @@ package com.example.conf;
 import com.example.models.User;
 import com.example.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -18,7 +18,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 
-@Configuration
+@SpringBootConfiguration
 @EnableAuthorizationServer
 @EnableResourceServer
 @RestController

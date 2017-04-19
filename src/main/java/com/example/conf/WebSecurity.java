@@ -1,13 +1,11 @@
 package com.example.conf;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,7 +14,6 @@ import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
@@ -24,9 +21,8 @@ import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-@Configuration
+@SpringBootConfiguration
 @EnableOAuth2Client
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class WebSecurity extends WebSecurityConfigurerAdapter {
 
 //    @Bean
@@ -51,12 +47,21 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         // @formatter:off
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/login**", "/api**", "/browser", "/error**",
-                        "/actuator**", "/profile**", "/beans**").permitAll()
+                .antMatchers(
+                        "/",
+                        "/login**",
+                        "/api**",
+                        "/browser",
+                        "/error**",
+                        "/actuator**",
+                        "/profile**",
+                        "/beans**",
+                        "/health"
+                ).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling()
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
+//                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/"))
                 .and().logout().logoutSuccessUrl("/").permitAll()
                 .and().csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
 ////				.and().addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
