@@ -2,11 +2,45 @@
 	"variables": [],
 	"info": {
 		"name": "API SERVER",
-		"_postman_id": "ff1ed6a9-2371-a9d2-f216-80320d45468b",
+		"_postman_id": "1fc2dc3a-d9bb-127a-32c0-610c579e02e2",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Actuator",
+			"description": "",
+			"item": [
+				{
+					"name": "http://localhost:8080/health",
+					"request": {
+						"url": "http://localhost:8080/health",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8080/actuator",
+					"request": {
+						"url": "http://localhost:8080/actuator",
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
 		{
 			"name": "Get Token http://localhost:8080/oauth/token",
 			"event": [
@@ -38,6 +72,11 @@
 						"key": "Authorization",
 						"value": "Basic YWNtZTphY21lc2VjcmV0",
 						"description": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": ""
 					}
 				],
 				"body": {
@@ -60,16 +99,67 @@
 							"value": "{{password}}",
 							"type": "text",
 							"enabled": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "OPTIONS Token http://localhost:8080/oauth/token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "http://localhost:8080/oauth/token",
+				"method": "OPTIONS",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text",
+							"enabled": true
 						},
 						{
-							"key": "",
-							"value": "",
+							"key": "username",
+							"value": "{{username}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "client_id",
+							"value": "acme",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "client_secret",
+							"value": "acmesecret",
 							"type": "text",
 							"enabled": true
 						}
 					]
 				},
-				"description": "Login using username-password connection"
+				"description": "This request is for testing that OPTIONS request is passed without authentication."
 			},
 			"response": []
 		},
@@ -84,14 +174,14 @@
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"Username is valid\"] = jsonData.username === postman.getEnvironmentVariable(\"username\");",
 							""
 						]
 					}
 				}
 			],
 			"request": {
-				"url": "http://localhost:8080/me",
+				"url": "http://localhost:8080/user",
 				"method": "POST",
 				"header": [
 					{
@@ -106,7 +196,7 @@
 					}
 				],
 				"body": {},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": "Returns current logged in user details"
 			},
 			"response": []
 		},
@@ -118,10 +208,7 @@
 					"script": {
 						"type": "text/javascript",
 						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"",
-							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
 							""
 						]
 					}
@@ -143,7 +230,7 @@
 					}
 				],
 				"body": {},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": "Returns list of all users"
 			},
 			"response": []
 		},
@@ -158,7 +245,7 @@
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"Username is valid\"] = jsonData.username === postman.getEnvironmentVariable(\"username\");",
 							""
 						]
 					}
@@ -180,7 +267,7 @@
 					}
 				],
 				"body": {},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": "Returns user with id: 1"
 			},
 			"response": []
 		},
@@ -192,10 +279,10 @@
 					"script": {
 						"type": "text/javascript",
 						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Status code is 201\"] = responseCode.code === 201;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"Username is valid\"] = jsonData.username === \"Chuck\";",
 							""
 						]
 					}
@@ -220,7 +307,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"Chuck\",\n    \"password\": \"Chuck\",\n    \"email\": \"chuck@communications.com\"\n }"
 				},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": "Creates new user"
 			},
 			"response": []
 		},
@@ -235,7 +322,7 @@
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"Username is valid\"] = jsonData.username === \"Chuck\";",
 							""
 						]
 					}
@@ -260,7 +347,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"Chuck\",\n    \"password\": \"Chuck\",\n    \"email\": \"chuck@communications.com\"\n }"
 				},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		},
@@ -275,7 +362,7 @@
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"Username is valid\"] = jsonData.username === \"Chuck2\";",
 							""
 						]
 					}
@@ -298,31 +385,16 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"Chuck\"\n}"
+					"raw": "{\n    \"username\": \"Chuck2\"\n}"
 				},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		},
 		{
-			"name": "GET Books http://localhost:8080/books",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"",
-							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
-							""
-						]
-					}
-				}
-			],
+			"name": "GET ChuckNorris Facts http://localhost:8080/chuckNorris",
 			"request": {
-				"url": "http://localhost:8080/books",
+				"url": "http://localhost:8080/chuckNorris",
 				"method": "GET",
 				"header": [
 					{
@@ -337,29 +409,14 @@
 					}
 				],
 				"body": {},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		},
 		{
-			"name": "GET Book http://localhost:8080/books/1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"",
-							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
-							""
-						]
-					}
-				}
-			],
+			"name": "GET ChuckNorris Fact http://localhost:8080/chuckNorris/1",
 			"request": {
-				"url": "http://localhost:8080/books/1",
+				"url": "http://localhost:8080/chuckNorris/1",
 				"method": "GET",
 				"header": [
 					{
@@ -374,29 +431,14 @@
 					}
 				],
 				"body": {},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		},
 		{
-			"name": "Create Book http://localhost:8080/books",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"",
-							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
-							""
-						]
-					}
-				}
-			],
+			"name": "Create ChuckNorris Fact http://localhost:8080/chuckNorris",
 			"request": {
-				"url": "http://localhost:8080/books",
+				"url": "http://localhost:8080/chuckNorris",
 				"method": "POST",
 				"header": [
 					{
@@ -412,31 +454,31 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"title\": \"Chuck\",\n    \"author\": \"Chuck\"\n }"
+					"raw": "{\n    \"fact\": \"Whiteboards are white because Chuck Norris scared them that way.\",\n    \"factNo\": \"102\"\n }"
 				},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		},
 		{
-			"name": "Update Book http://localhost:8080/books/1",
+			"name": "Update ChuckNorris Fact http://localhost:8080/chuckNorris/1",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"type": "text/javascript",
 						"exec": [
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"Status code is 201\"] = responseCode.code === 201;",
 							"",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"Username is valid\"] = jsonData.name === postman.getEnvironmentVariable(\"username\");",
+							"tests[\"fact is updated\"] = jsonData.fact === \"Some fact about Chuck Norris\";",
 							""
 						]
 					}
 				}
 			],
 			"request": {
-				"url": "http://localhost:8080/books/1",
+				"url": "http://localhost:8080/chuckNorris/1",
 				"method": "PUT",
 				"header": [
 					{
@@ -452,9 +494,9 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"title\": \"Chuck\",\n    \"author\": \"Chuck\"\n }"
+					"raw": "{\n    \"fact\": \"Some fact about Chuck Norris\",\n    \"factNo\": \"1\"\n }"
 				},
-				"description": "Secured ping to check Resource Server is responding - authorization credentials (JWT access token) required - however, no Roles information (scope) required."
+				"description": ""
 			},
 			"response": []
 		}

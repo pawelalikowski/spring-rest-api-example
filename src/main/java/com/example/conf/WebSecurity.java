@@ -58,12 +58,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/",
                         "/login**",
-                        "/api**",
-                        "/browser",
                         "/error**",
-                        "/actuator**",
-                        "/profile**",
-                        "/beans**",
                         "/health"
                 ).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

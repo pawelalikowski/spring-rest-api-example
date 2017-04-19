@@ -1,14 +1,13 @@
-## Przykładowy projekt serwera REST API
-Brojekt bazuje na poniższych tutorialach:
-https://spring.io/guides/tutorials/spring-boot-oauth2/
-http://docs.spring.io/spring-data/rest/docs/current/reference/html/#getting-started.introduction
+## Spring REST API Example
+Simple REST API example application build with Spring Boot and secured with Spring Security.
+
+#### Testing: 
+`./gradlew test` 
+
+#### Running: 
+`./gradlew bootRun` application starts on http://localhost:8080
 
 
-
-#### Uruchomienie aplikacji: 
-windows: `gradlew.bat bootRun` 
-
-linux: `./gradlew bootRun` 
-
-Aplikacja nasłuchuje na porcie 8080. W katalogu postman znajduje się gotowa kolekcja do [Postmana](https://www.getpostman.com/) umożliwiająca odpytywanie API.
-
+#### Calling API: 
+You can import [Postman](https://www.getpostman.com/) collection from postman directory to se some examples.   
+API endpoints are secured with spring-security. To access secured endpoints you must call /oauth/token endpoint first to get access token.
