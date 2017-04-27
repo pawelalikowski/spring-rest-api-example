@@ -1,22 +1,22 @@
 package com.example.models;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
-@Entity
+@Entity(name = "users")
 public class User implements Serializable {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @NotNull
-    private String username;
+    private String email;
 
     @NotNull
     private String password;
@@ -25,17 +25,27 @@ public class User implements Serializable {
 
     private String lastName;
 
-    private String email;
+    private Boolean isActive = false;
+
+    private Boolean isExpired = false;
+
+    private Boolean isBlocked = false;
+
+    private Integer failedAuthorizations = 0;
+
+    private Date lastSuccessfulLogin;
+
+    @OneToMany(mappedBy = "user")
+    private Set<ConfirmationToken> tokens;
 
     public User() {}
 
-    public User(String username, String password) {
-        this.username = username;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
-    public User(String username, String password, String firstName, String lastName, String email) {
-        this.username = username;
+    public User(String password, String firstName, String lastName, String email) {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,14 +58,6 @@ public class User implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -88,5 +90,45 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getExpired() {
+        return isExpired;
+    }
+
+    public void setExpired(Boolean expired) {
+        isExpired = expired;
+    }
+
+    public Boolean getBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public Integer getFailedAuthorizations() {
+        return failedAuthorizations;
+    }
+
+    public void setFailedAuthorizations(Integer failedAuthorizations) {
+        this.failedAuthorizations = failedAuthorizations;
+    }
+
+    public Date getLastSuccessfulLogin() {
+        return lastSuccessfulLogin;
+    }
+
+    public void setLastSuccessfulLogin(Date lastSuccessfulLogin) {
+        this.lastSuccessfulLogin = lastSuccessfulLogin;
     }
 }

@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.5.2.RELEASE'
+		springBootVersion = '1.5.3.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -13,6 +13,8 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'application'
+
 
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
@@ -28,17 +30,30 @@ dependencies {
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-logging'
 	compile group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
 	compile group: 'org.springframework.data', name: 'spring-data-rest-hal-browser'
 	compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.1.0.RELEASE'
 	compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.0.7.RELEASE'
-	compile group: 'com.h2database', name: 'h2', version: '1.4.194'
 	compile group: 'com.github.javafaker', name: 'javafaker', version: '0.13'
 	compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.2'
+	compile group: 'com.sun.mail', name: 'javax.mail'
+	compile group: 'org.springframework', name: 'spring-context-support'
+	compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '3.2.2'
+	compile group: 'io.dropwizard.metrics', name: 'metrics-graphite', version: '3.2.2'
+	compile group: 'io.dropwizard.metrics', name: 'metrics-jvm', version: '3.2.2'
+
+	runtime group: 'org.xerial', name: 'sqlite-jdbc', version: '3.16.1'
+	runtime group: 'mysql', name: 'mysql-connector-java', version: '6.0.6'
+	runtime group: 'com.h2database', name: 'h2', version: '1.4.194'
+	runtime group: 'org.postgresql', name: 'postgresql', version: '42.0.0'
 
 	testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 	testCompile group: 'org.springframework.security', name: 'spring-security-test'
 }
+
+mainClassName = "com.example.ApiApplication"
+applicationDefaultJvmArgs = ['-mx256m', '-XX:+UseConcMarkSweepGC']
 
 dependencyManagement {
 	imports {

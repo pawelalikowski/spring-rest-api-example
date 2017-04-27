@@ -35,10 +35,9 @@ public class AuthorizationServer {
     @RequestMapping({ "/user", "/me" })
     public ResponseEntity<User> user(Principal principal) {
         String username = (String) ((OAuth2Authentication) principal).getUserAuthentication().getPrincipal();
-        Optional<User> user = repository.findByUsername(username);
+        Optional<User> user = repository.findByEmail(username);
         return user.map(user1 -> ResponseEntity.ok().body(user1)).orElseGet(() -> ResponseEntity.badRequest().build());
     }
-
 
     @Bean
     public JwtTokenStore jwtStore(JwtAccessTokenConverter jwtAccessTokenConverter) {

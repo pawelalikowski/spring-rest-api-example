@@ -36,7 +36,28 @@ github:
   resource:
     userInfoUri: https://api.github.com/user
 
+app:
+  metrics:
+    graphite:
+      hostname: '127.0.0.1'
+      port: 2003
+      period: 10
+
 logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.web.filter.CommonsRequestLoggingFilter: DEBUG
+spring:
+  mail:
+    host: localhost
+    port: 1025
+  datasource:
+    username: apiuser
+    password: apipassword
+    url: jdbc:postgresql://localhost:5432/api
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true

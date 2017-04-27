@@ -1,6 +1,8 @@
 package com.example.controllers;
 
-import com.example.Services.UserService;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.example.services.UserService;
 import com.example.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -20,26 +22,33 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class UserController {
 
     private UserService userService;
+    private final MetricRegistry metricRegistry;
+    private final Timer indexTimer;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, MetricRegistry metricRegistry) {
         this.userService = userService;
+        this.metricRegistry = metricRegistry;
+        this.indexTimer = metricRegistry.timer("users.index");
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/index")
     public @ResponseBody ResponseEntity<?> getProducers() {
-        List<User> users = (List<User>) userService.findAll();
+        try (Timer.Context context = indexTimer.time()) {
 
-        //
-        // do some intermediate processing, logging, etc. with the users
-        //
+            List<User> users = userService.findAll();
 
-        Resources<User> resources = new Resources<>(users);
+            //
+            // do some intermediate processing, logging, etc. with the users
+            //
 
-        resources.add(linkTo(methodOn(UserController.class).getProducers()).withSelfRel());
+            Resources<User> resources = new Resources<>(users);
 
-        // add other links as needed
+            resources.add(linkTo(methodOn(UserController.class).getProducers()).withSelfRel());
 
-        return ResponseEntity.ok(resources);
+            // add other links as needed
+
+            return ResponseEntity.ok(resources);
+        }
     }
 }
