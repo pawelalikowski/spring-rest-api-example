@@ -3,7 +3,6 @@ package com.example.conf;
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.MetricSet;
-import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
@@ -12,8 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -21,30 +18,19 @@ import java.util.concurrent.TimeUnit;
 public class MetricsConfiguration {
 
     private final MetricRegistry metricRegistry;
-
-    @Value("${app.metrics.graphite.hostname}")
-    private String hostname;
-
-    @Value("${app.metrics.graphite.port}")
-    private Integer port;
+    private final GraphiteReporter reporter;
 
     @Value("${app.metrics.graphite.period}")
     private Integer period;
 
     @Autowired
-    public MetricsConfiguration(MetricRegistry metricRegistry) {
+    public MetricsConfiguration(MetricRegistry metricRegistry, GraphiteReporter reporter) {
         this.metricRegistry = metricRegistry;
+        this.reporter = reporter;
     }
 
     @PostConstruct
-    public void startGraphiteReporter() throws UnknownHostException {
-        String hostname = InetAddress.getLocalHost().getHostName();
-
-        Graphite graphite = new Graphite(hostname, port);
-        GraphiteReporter reporter = GraphiteReporter
-                .forRegistry(metricRegistry)
-                .prefixedWith("services.api." + hostname)
-                .build(graphite);
+    public void startGraphiteReporter() {
         reporter.start(period, TimeUnit.SECONDS);
     }
 

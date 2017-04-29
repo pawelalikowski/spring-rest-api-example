@@ -51,11 +51,11 @@ spring:
   mail:
     host: localhost
     port: 1025
-  datasource:
-    username: apiuser
-    password: apipassword
-    url: jdbc:postgresql://localhost:5432/api
-    driver-class-name: org.postgresql.Driver
+#  datasource:
+#    username: apiuser
+#    password: apipassword
+#    url: jdbc:postgresql://localhost:5432/api
+#    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop

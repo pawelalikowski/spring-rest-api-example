@@ -1,5 +1,6 @@
 package com.example;
 
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.example.conf.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,13 +26,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = {
                 ApiApplication.class,
-//                AuthorizationServer.class,
+                AuthorizationServer.class,
                 RepositoryConf.class,
                 WebSecurity.class,
                 AppBeans.class
         },
         value = {"application.yml"})
 public class ApiIntegrationTest {
+
+    @MockBean
+    public GraphiteReporter graphiteReporter;
 
     @LocalServerPort
     private int port;
@@ -85,12 +90,6 @@ public class ApiIntegrationTest {
         given().contentType(ContentType.JSON).body(requestBody)
                 .when().post("/auth/register")
                 .then().statusCode(HttpStatus.CREATED.value());
-    }
-
-    @Test
-    public void auth_hello_should_be_secured() throws Exception {
-        when().get("/auth/hello")
-                .then().statusCode(HttpStatus.UNAUTHORIZED.value());
     }
 
 }

@@ -1,11 +1,13 @@
 package com.example.controllers;
 
 import com.example.models.ChuckNorris;
+import com.example.models.PasswordResetRequest;
 import com.example.models.User;
 import com.example.repositories.ChuckNorrisRepository;
 import com.example.services.AuthService;
 import com.example.services.UserService;
 import com.github.javafaker.Faker;
+import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +16,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,24 +40,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = AuthController.class, secure = false)
 public class AuthControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
+
+    private Gson gson = new Gson();
+    private User user = new User("secret", "Chuck", "Norris", "chuck@example.com");
+    private PasswordResetRequest passwordResetRequest = new PasswordResetRequest("chuck@example.com", "token123", "secret");
 
     @MockBean
     private AuthService authService;
 
-    @MockBean
-    private UserService userService;
-
-    private MultiValueMap<String, String> requestParams;
-
     @Before
     public void setUp() throws Exception {
-        final Faker faker = new Faker(new Locale("en"));
-        requestParams = new LinkedMultiValueMap<>();
-        requestParams.add("username", "Chuck");
-        requestParams.add("password", "Chuck");
-        requestParams.add("email", "chuck@communications.com");
     }
 
 
@@ -63,9 +61,32 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void auth_register_shoud_call_auth_service_register() throws Exception {
-        this.mockMvc.perform(post("/auth/register").params(requestParams))
+    public void auth_register_should_call_auth_service_register() throws Exception {
+        this.mockMvc.perform(post("/auth/register")
+                .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(user)))
                 .andExpect(status().isCreated());
-        verify(authService).register(new User());
+        verify(authService).register(user);
+    }
+
+    @Test
+    public void auth_confirm_should_call_auth_service_confirm() throws Exception {
+        this.mockMvc.perform(get("/auth/confirm?token=token123&email=chuck@example.com"))
+                .andExpect(status().isNoContent());
+        verify(authService).confirm("chuck@example.com", "token123");
+    }
+
+    @Test
+    public void auth_requestPasswordReset_should_call_auth_service() throws Exception {
+        this.mockMvc.perform(get("/auth/requestPasswordReset?email=chuck@example.com"))
+                .andExpect(status().isCreated());
+        verify(authService).requestPasswordReset("chuck@example.com");
+    }
+
+    @Test
+    public void auth_passwordReset_should_call_auth_service() throws Exception {
+        this.mockMvc.perform(post("/auth/passwordReset")
+                .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(passwordResetRequest)))
+                .andExpect(status().isNoContent());
+        verify(authService).passwordReset(passwordResetRequest);
     }
 }
