@@ -57,12 +57,6 @@ public class ApiIntegrationTest {
     }
 
     @Test
-    public void health_endpoint_is_available_to_everyone() {
-        when().get("/health")
-                .then().statusCode(HttpStatus.OK.value()).body("status", equalTo("UP"));
-    }
-
-    @Test
     public void options_requests_are_available_to_everyone() {
         when().options("/oauth/token")
                 .then().statusCode(HttpStatus.OK.value());
