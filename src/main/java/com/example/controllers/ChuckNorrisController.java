@@ -1,13 +1,16 @@
 package com.example.controllers;
 
+import com.example.exceptions.InvalidRequestException;
 import com.example.models.ChuckNorris;
 import com.example.repositories.ChuckNorrisRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequestMapping("chuckNorris")
@@ -32,7 +35,11 @@ public class ChuckNorrisController {
     }
 
     @RequestMapping( value = "", method = RequestMethod.POST)
-    public ResponseEntity<ChuckNorris> create(@RequestBody ChuckNorris chuckNorris) {
+    public ResponseEntity<ChuckNorris> create(@RequestBody @Valid ChuckNorris chuckNorris, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestException("Invalid chuckNorris", bindingResult);
+        }
+
         return new ResponseEntity<>(chuckNorrisRepository.save(chuckNorris), HttpStatus.CREATED);
     }
 

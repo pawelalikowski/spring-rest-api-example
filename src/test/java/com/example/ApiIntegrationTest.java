@@ -2,9 +2,12 @@ package com.example;
 
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.example.conf.*;
+import com.example.models.User;
+import com.example.services.MailService;
+import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +15,7 @@ import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.LinkedMultiValueMap;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -35,11 +36,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ApiIntegrationTest {
 
     @MockBean
+    public MailService mailService;
+
+    @MockBean
     public GraphiteReporter graphiteReporter;
 
     @LocalServerPort
     private int port;
+
     private String token;
+    private Gson gson = new Gson();
+    private User user1 = new User("secret", "Chuck", "Norris", "chuck1@example.com");
+    private User user2 = new User("secret", "Chuck", "Norris", "chuck2@example.com");
+
 
     @Before
     public void setup() {
@@ -54,6 +63,10 @@ public class ApiIntegrationTest {
                 .formParam("username", "user")
                 .formParam("password", "password")
                 .request().post("/oauth/token").getBody().jsonPath().get("access_token").toString();
+    }
+
+    @After
+    public void tearDown() {
     }
 
     @Test
@@ -76,26 +89,18 @@ public class ApiIntegrationTest {
     }
 
     @Test
-    public void auth_register_should_be_available_to_everyone() throws Exception {
-        String requestBody = "{\"username\": \"Chuck\","
-                + "\"password\": \"Chuck\","
-                + "\"email\": \"chuck@communications.com\"}";
-
-        given().contentType(ContentType.JSON).body(requestBody)
+    public void auth_register_should_be_available_to_everyone() {
+        given().contentType(ContentType.JSON).body(gson.toJson(user1))
                 .when().post("/auth/register")
                 .then().statusCode(HttpStatus.CREATED.value());
     }
 
     @Test
-    public void auth_register_should_check_is_email_taken() throws Exception {
-        String requestBody = "{\"username\": \"Chuck\","
-                + "\"password\": \"Chuck\","
-                + "\"email\": \"chuck@communications.com\"}";
-
-        given().contentType(ContentType.JSON).body(requestBody)
+    public void auth_register_should_check_is_email_taken() {
+        given().contentType(ContentType.JSON).body(gson.toJson(user2))
                 .when().post("/auth/register")
                 .then().statusCode(HttpStatus.CREATED.value());
-       given().contentType(ContentType.JSON).body(requestBody)
+       given().contentType(ContentType.JSON).body(gson.toJson(user2))
                 .when().post("/auth/register")
                 .then().statusCode(HttpStatus.BAD_REQUEST.value());
     }

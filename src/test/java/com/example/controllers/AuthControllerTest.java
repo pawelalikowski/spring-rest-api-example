@@ -47,7 +47,8 @@ public class AuthControllerTest {
     private Gson gson = new Gson();
     private User user = new User("secret", "Chuck", "Norris", "chuck@example.com");
     private User notValidUser = new User("secret", "chuck@example.com");
-    private PasswordResetRequest passwordResetRequest = new PasswordResetRequest("chuck@example.com", "token123", "secret");
+    private PasswordResetRequest passwordResetRequest = new PasswordResetRequest("chuck@example.com", "token123", "123456789");
+    private PasswordResetRequest invalidPasswordResetRequest = new PasswordResetRequest();
 
     @MockBean
     private AuthService authService;
@@ -89,6 +90,13 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(passwordResetRequest)))
                 .andExpect(status().isNoContent());
         verify(authService).passwordReset(passwordResetRequest);
+    }
+
+    @Test
+    public void auth_passwordReset_should_validate() throws Exception {
+        this.mockMvc.perform(post("/auth/passwordReset")
+                .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(invalidPasswordResetRequest)))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
