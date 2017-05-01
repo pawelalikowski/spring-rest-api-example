@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
@@ -73,7 +74,7 @@ public class AuthServiceTest {
         when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, confirmationToken.getToken(), confirmationToken.getTokenType())).then(invocation -> Optional.ofNullable(confirmationToken));
         when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, passwordToken.getToken(), passwordToken.getTokenType())).then(invocation -> Optional.ofNullable(passwordToken));
 
-        this.authService = new AuthService(userRepository, mailService, tokenRepository, confirmationTokenFactory, mailMessageBuilder);
+        this.authService = new AuthService(userRepository, mailService, tokenRepository, confirmationTokenFactory, mailMessageBuilder, new BCryptPasswordEncoder());
     }
 
     @After

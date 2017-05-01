@@ -6,6 +6,7 @@ import com.codahale.metrics.graphite.GraphiteReporter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import javax.servlet.Filter;
@@ -48,6 +49,11 @@ public class AppBeans {
                 .forRegistry(metricRegistry)
                 .prefixedWith("services.api." + hostname)
                 .build(graphite);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

@@ -11,6 +11,7 @@ import com.github.javafaker.Name;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -25,16 +26,18 @@ public class OnBoot implements ApplicationRunner {
     private final ChuckNorrisRepository chuckNorrisRepository;
     private final UserRepository userRepository;
     private final TokenStatusRepository tokenStatusRepository;
+    private final BCryptPasswordEncoder encoder;
 
     @Autowired
     public OnBoot(
             UserRepository userRepository,
             ChuckNorrisRepository chuckNorrisRepository,
-            TokenStatusRepository tokenStatusRepository
-    ) {
+            TokenStatusRepository tokenStatusRepository,
+            BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.chuckNorrisRepository = chuckNorrisRepository;
         this.tokenStatusRepository = tokenStatusRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -44,11 +47,11 @@ public class OnBoot implements ApplicationRunner {
     }
 
     private void seedDatabase() {
-        userRepository.save(new User("password", "Chuck", "Norris", "chuck@norris.com"));
-        userRepository.save(new User("admin", "Admin", "User", "password"));
-        for(int i = 1; i <= 101; i++) {
+        userRepository.save(new User(encoder.encode("password"), "Chuck", "Norris", "chuck@norris.com"));
+        userRepository.save(new User(encoder.encode("password"), "Admin", "User", "admin@example.com"));
+        for(int i = 1; i <= 10; i++) {
             Name name = faker.name();
-            userRepository.save(new User("password", name.firstName(), name.lastName(), name.username()+"@gmail.com"));
+            userRepository.save(new User(encoder.encode("password"), name.firstName(), name.lastName(), name.username()+"@example.com"));
         }
         for(int i = 1; i <= 101; i++) chuckNorrisRepository.save(new ChuckNorris(i, faker.chuckNorris().fact()));
 

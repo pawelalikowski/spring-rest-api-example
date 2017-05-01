@@ -10,6 +10,7 @@ import com.example.models.User;
 import com.example.repositories.ConfirmationTokenRepository;
 import com.example.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,17 +23,20 @@ public class AuthService {
     private final ConfirmationTokenRepository tokenRepository;
     private final ConfirmationTokenFactory tokenFactory;
     private final MailMessageFactory mailMessageFactory;
+    private final BCryptPasswordEncoder encoder;
 
     @Autowired
     public AuthService(UserRepository userRepository, MailService mailService,
                        ConfirmationTokenRepository tokenRepository,
                        ConfirmationTokenFactory tokenFactory,
-                       MailMessageFactory mailMessageFactory) {
+                       MailMessageFactory mailMessageFactory,
+                       BCryptPasswordEncoder encoder) {
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.tokenRepository = tokenRepository;
         this.tokenFactory = tokenFactory;
         this.mailMessageFactory = mailMessageFactory;
+        this.encoder = encoder;
     }
 
 
@@ -40,6 +44,7 @@ public class AuthService {
     public void register(final User user) {
         userRepository.findByEmail(user.getEmail()).ifPresent(user1 -> {throw new IllegalArgumentException(user1.getEmail() + " address taken");});
         ConfirmationToken token = tokenFactory.create(user, TokenType.EMAIL_CONFIRMATION);
+        user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
         tokenRepository.save(token);
         mailService.sendMail(mailMessageFactory.create()
@@ -79,14 +84,14 @@ public class AuthService {
     public void passwordReset(PasswordResetRequest passwordResetRequest) {
         verifyToken(passwordResetRequest.getToken(), passwordResetRequest.getEmail(), TokenType.PASSWORD_RESET);
         User user = userRepository.findByEmail(passwordResetRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("User does not exists"));
-        user.setPassword(passwordResetRequest.getPassword());
+        user.setPassword(encoder.encode(passwordResetRequest.getPassword()));
         userRepository.save(user);
     }
 
     private void verifyToken(String token, String email, TokenType tokenType) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User does not exits"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Email not found: " + email));
         ConfirmationToken confirmationToken = tokenRepository.findByUserAndTokenAndTokenType(user, token, tokenType).orElseThrow(() -> new IllegalArgumentException("Bad token"));
-        if ( ! confirmationToken.getTokenStatus().equals(TokenStatus.PENDING)) throw new IllegalStateException("Bad token status");
+        if ( ! TokenStatus.PENDING.equals(confirmationToken.getTokenStatus())) throw new IllegalStateException("Token is " + confirmationToken.getTokenStatus().getValue());
         confirmationToken.setTokenStatus(TokenStatus.COMPLETED);
         tokenRepository.save(confirmationToken);
     }

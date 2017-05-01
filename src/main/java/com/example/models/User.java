@@ -1,30 +1,37 @@
 package com.example.models;
 
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
 @Entity(name = "users")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue
     private Long id;
 
+    @NotBlank
+    @Email
     private String email;
 
-    @NotNull
+    @NotBlank
     private String password;
 
-    @NotNull
+    @NotBlank
     private String firstName;
 
-    @NotNull
+    @NotBlank
     private String lastName;
 
     private Boolean isActive = false;
@@ -32,6 +39,8 @@ public class User implements Serializable {
     private Boolean isExpired = false;
 
     private Boolean isBlocked = false;
+
+    private Boolean isPasswordExpired = false;
 
     private Integer failedAuthorizations = 0;
 
@@ -52,6 +61,7 @@ public class User implements Serializable {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.isActive = true;
     }
 
     public Long getId() {
@@ -62,8 +72,38 @@ public class User implements Serializable {
         this.id = id;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return !isExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !isBlocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return !isPasswordExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive;
     }
 
     public void setPassword(String password) {
@@ -149,11 +189,11 @@ public class User implements Serializable {
         if (isActive != null ? !isActive.equals(user.isActive) : user.isActive != null) return false;
         if (isExpired != null ? !isExpired.equals(user.isExpired) : user.isExpired != null) return false;
         if (isBlocked != null ? !isBlocked.equals(user.isBlocked) : user.isBlocked != null) return false;
+        if (isPasswordExpired != null ? !isPasswordExpired.equals(user.isPasswordExpired) : user.isPasswordExpired != null)
+            return false;
         if (failedAuthorizations != null ? !failedAuthorizations.equals(user.failedAuthorizations) : user.failedAuthorizations != null)
             return false;
-        if (lastSuccessfulLogin != null ? !lastSuccessfulLogin.equals(user.lastSuccessfulLogin) : user.lastSuccessfulLogin != null)
-            return false;
-        return tokens != null ? tokens.equals(user.tokens) : user.tokens == null;
+        return lastSuccessfulLogin != null ? lastSuccessfulLogin.equals(user.lastSuccessfulLogin) : user.lastSuccessfulLogin == null;
     }
 
     @Override
@@ -166,9 +206,9 @@ public class User implements Serializable {
         result = 31 * result + (isActive != null ? isActive.hashCode() : 0);
         result = 31 * result + (isExpired != null ? isExpired.hashCode() : 0);
         result = 31 * result + (isBlocked != null ? isBlocked.hashCode() : 0);
+        result = 31 * result + (isPasswordExpired != null ? isPasswordExpired.hashCode() : 0);
         result = 31 * result + (failedAuthorizations != null ? failedAuthorizations.hashCode() : 0);
         result = 31 * result + (lastSuccessfulLogin != null ? lastSuccessfulLogin.hashCode() : 0);
-        result = 31 * result + (tokens != null ? tokens.hashCode() : 0);
         return result;
     }
 }

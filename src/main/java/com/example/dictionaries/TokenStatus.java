@@ -88,8 +88,7 @@ public class TokenStatus {
         if (sequence != null ? !sequence.equals(that.sequence) : that.sequence != null) return false;
         if (key != null ? !key.equals(that.key) : that.key != null) return false;
         if (value != null ? !value.equals(that.value) : that.value != null) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        return tokens != null ? tokens.equals(that.tokens) : that.tokens == null;
+        return description != null ? description.equals(that.description) : that.description == null;
     }
 
     @Override
@@ -99,7 +98,6 @@ public class TokenStatus {
         result = 31 * result + (key != null ? key.hashCode() : 0);
         result = 31 * result + (value != null ? value.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (tokens != null ? tokens.hashCode() : 0);
         return result;
     }
 }
