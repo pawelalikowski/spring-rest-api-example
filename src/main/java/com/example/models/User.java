@@ -21,8 +21,10 @@ public class User implements Serializable {
     @NotNull
     private String password;
 
+    @NotNull
     private String firstName;
 
+    @NotNull
     private String lastName;
 
     private Boolean isActive = false;

@@ -86,4 +86,18 @@ public class ApiIntegrationTest {
                 .then().statusCode(HttpStatus.CREATED.value());
     }
 
+    @Test
+    public void auth_register_should_check_is_email_taken() throws Exception {
+        String requestBody = "{\"username\": \"Chuck\","
+                + "\"password\": \"Chuck\","
+                + "\"email\": \"chuck@communications.com\"}";
+
+        given().contentType(ContentType.JSON).body(requestBody)
+                .when().post("/auth/register")
+                .then().statusCode(HttpStatus.CREATED.value());
+       given().contentType(ContentType.JSON).body(requestBody)
+                .when().post("/auth/register")
+                .then().statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

@@ -26,7 +26,8 @@ public class AuthService {
     @Autowired
     public AuthService(UserRepository userRepository, MailService mailService,
                        ConfirmationTokenRepository tokenRepository,
-                       ConfirmationTokenFactory tokenFactory, MailMessageFactory mailMessageFactory) {
+                       ConfirmationTokenFactory tokenFactory,
+                       MailMessageFactory mailMessageFactory) {
         this.userRepository = userRepository;
         this.mailService = mailService;
         this.tokenRepository = tokenRepository;
@@ -37,13 +38,18 @@ public class AuthService {
 
     @Transactional
     public void register(final User user) {
+        userRepository.findByEmail(user.getEmail()).ifPresent(user1 -> {throw new IllegalArgumentException(user1.getEmail() + " address taken");});
         ConfirmationToken token = tokenFactory.create(user, TokenType.EMAIL_CONFIRMATION);
-        String text = "Somebody registered your email on our site. If you wish to confirm registration please click on link below:"
-                + "http://localhost:8080/auth/confirm?user=" + user.getEmail() + "&token=" + token.getToken();
-        String subject = "Confirm registration";
         userRepository.save(user);
         tokenRepository.save(token);
-        mailService.sendMail(mailMessageFactory.create().to(user.getEmail()).from("API").text(text).subject(subject).build());
+        mailService.sendMail(mailMessageFactory.create()
+                .from("API")
+                .to(user.getEmail())
+                .subject("Confirm registration")
+                .template("registration-confirmation.ftl")
+                .addModel("user", user)
+                .addModel("token", token)
+                .build());
     }
 
     @Transactional
@@ -58,11 +64,15 @@ public class AuthService {
     public void requestPasswordReset(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User does not exists"));
         ConfirmationToken token = tokenFactory.create(user, TokenType.PASSWORD_RESET);
-        String text = "Somebody requested password reset for your account. If you wish to reset password please click link below:"
-                + "http://localhost:8080/resetPassword?user=" + user.getEmail() + "&token=" + token.getToken();
-        String subject = "Confirm registration";
         tokenRepository.save(token);
-        mailService.sendMail(mailMessageFactory.create().to(user.getEmail()).from("API").text(text).subject(subject).build());
+        mailService.sendMail(mailMessageFactory.create()
+                .from("API")
+                .to(user.getEmail())
+                .template("password-reset.ftl")
+                .subject("Confirm registration")
+                .addModel("user", user)
+                .addModel("token", token)
+                .build());
     }
 
     @Transactional

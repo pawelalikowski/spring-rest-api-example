@@ -1,9 +1,11 @@
 package com.example.factories;
 
-import org.springframework.mail.SimpleMailMessage;
+import com.example.models.Mail;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class MailMessageFactory {
@@ -26,7 +28,9 @@ public class MailMessageFactory {
 
         private String subject;
 
-        private String text;
+        private String template;
+
+        private Map<String, Object> model = new HashMap<>();
 
         private MailMessageBuilder() {
         }
@@ -52,11 +56,6 @@ public class MailMessageFactory {
             return this;
         }
 
-        public MailMessageBuilder text(String text) {
-            this.text = text;
-            return this;
-        }
-
         public MailMessageBuilder sentDate(Date sentDate) {
             this.sentDate = sentDate;
             return this;
@@ -72,17 +71,36 @@ public class MailMessageFactory {
             return this;
         }
 
-        public SimpleMailMessage build() {
-            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-            simpleMailMessage.setFrom(from);
-            simpleMailMessage.setTo(to);
-            simpleMailMessage.setReplyTo(replyTo);
-            simpleMailMessage.setCc(cc);
-            simpleMailMessage.setBcc(bcc);
-            simpleMailMessage.setSentDate(sentDate);
-            simpleMailMessage.setSubject(subject);
-            simpleMailMessage.setText(text);
-            return simpleMailMessage;
+        public Mail build() {
+            if (isNullOrEmpty(to)) throw new IllegalStateException("to must be set");
+            if (isNullOrEmpty(subject)) throw new IllegalStateException("subject must be set");
+            if (isNullOrEmpty(template)) throw new IllegalStateException("template must be set");
+            if (model.isEmpty()) throw new IllegalStateException("model must be set");
+            Mail mail = new Mail();
+            mail.setFrom(from);
+            mail.setTo(to);
+            mail.setReplyTo(replyTo);
+            mail.setCc(cc);
+            mail.setBcc(bcc);
+            mail.setSentDate(sentDate);
+            mail.setSubject(subject);
+            mail.setTemplate(template);
+            mail.setModel(model);
+            return mail;
+        }
+
+        private boolean isNullOrEmpty(String s) {
+            return s == null || "".equals(s);
+        }
+
+        public MailMessageBuilder template(String name) {
+            this.template = name;
+            return this;
+        }
+
+        public MailMessageBuilder addModel(String key, Object value) {
+            this.model.put(key, value);
+            return this;
         }
     }
 }

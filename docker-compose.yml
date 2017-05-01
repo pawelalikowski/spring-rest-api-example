@@ -1,17 +1,37 @@
 version: '2'
 services:
+  postgres:
+    image: "postgres:9-alpine"
+    ports:
+     - "5432:5432"
+    environment:
+     - POSTGRES_USER=apiuser
+     - POSTGRES_PASSWORD=apipassword
+     - POSTGRES_DB=api
+  mailhog:
+    image: "mailhog/mailhog"
+    ports:
+     - "1025:1025"
+     - "8025:8025"
+  graphite:
+    image: hopsoft/graphite-statsd
+    ports:
+      - "2003-2004:2003-2004"
+      - "2023-2024:2023-2024"
+      - "8125:8125/udp"
+      - "8126:8126"
+      - "80:80"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - graphite
 #  api:
 #    build: .
 #    ports:
 #     - "8080:8080"
 #    volumes:
 #     - .:/code
-#  postgres:
-#    image: "postgres:9.6"
-#    ports:
-#     - "5432:5432"
-  mailhog:
-    image: "mailhog/mailhog"
-    ports:
-     - "1025:1025"
-     - "8025:8025"
+#    depends_on:
+#     - postgres
