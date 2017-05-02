@@ -30,7 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 AuthorizationServer.class,
                 RepositoryConf.class,
                 WebSecurity.class,
-                AppBeans.class
+                AppBeans.class,
+
         },
         value = {"application.yml"})
 public class ApiIntegrationTest {
@@ -60,7 +61,7 @@ public class ApiIntegrationTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic YWNtZTphY21lc2VjcmV0")
                 .formParam("grant_type", "password")
-                .formParam("username", "user")
+                .formParam("username", "chuck@norris.com")
                 .formParam("password", "password")
                 .request().post("/oauth/token").getBody().jsonPath().get("access_token").toString();
     }

@@ -32,10 +32,13 @@ public class AuthServiceTest {
 
     @MockBean
     private MailService mailService;
+
     @MockBean
     private UserRepository userRepository;
+
     @MockBean
     private ConfirmationTokenRepository tokenRepository;
+
     @MockBean
     private ConfirmationTokenFactory confirmationTokenFactory;
     private final MailMessageFactory mailMessageBuilder = new MailMessageFactory();

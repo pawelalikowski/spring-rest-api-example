@@ -1,40 +1,24 @@
 package com.example.controllers;
 
-import com.example.models.ChuckNorris;
 import com.example.models.PasswordResetRequest;
 import com.example.models.User;
-import com.example.repositories.ChuckNorrisRepository;
+import com.example.repositories.UserRepository;
 import com.example.services.AuthService;
-import com.example.services.UserService;
-import com.github.javafaker.Faker;
 import com.google.gson.Gson;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -45,16 +29,23 @@ public class AuthControllerTest {
     private MockMvc mockMvc;
 
     private Gson gson = new Gson();
-    private User user = new User("secret", "Chuck", "Norris", "chuck@example.com");
-    private User notValidUser = new User("secret", "chuck@example.com");
-    private PasswordResetRequest passwordResetRequest = new PasswordResetRequest("chuck@example.com", "token123", "123456789");
+    private User user;
+    private User notValidUser;
+    private PasswordResetRequest passwordResetRequest;
     private PasswordResetRequest invalidPasswordResetRequest = new PasswordResetRequest();
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @MockBean
     private AuthService authService;
 
+    @MockBean
+    private UserRepository userRepository;
+
     @Before
     public void setUp() throws Exception {
+        user = new User("secret", "Chuck", "Norris", "chuck@example.com");
+        notValidUser = new User("secret", "chuck@example.com");
+        passwordResetRequest = new PasswordResetRequest("chuck@example.com", "token123", "123456789");
     }
 
 
@@ -67,6 +58,7 @@ public class AuthControllerTest {
         this.mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(user)))
                 .andExpect(status().isCreated());
+        user.setActive(false);
         verify(authService).register(user);
     }
 
