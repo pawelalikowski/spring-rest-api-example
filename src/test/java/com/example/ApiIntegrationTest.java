@@ -7,6 +7,7 @@ import com.example.services.MailService;
 import com.google.gson.Gson;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.ResponseBody;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,14 +57,15 @@ public class ApiIntegrationTest {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
 //        Mockito.reset(mockedExternalServiceAuthenticator, mockedServiceGateway);
-        token = RestAssured
+        ResponseBody body = RestAssured
                 .given()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic YWNtZTphY21lc2VjcmV0")
                 .formParam("grant_type", "password")
-                .formParam("username", "chuck@norris.com")
+                .formParam("username", "chuck@example.com")
                 .formParam("password", "password")
-                .request().post("/oauth/token").getBody().jsonPath().get("access_token").toString();
+                .request().post("/token").getBody();
+        token = body.jsonPath().get("access_token").toString();
     }
 
     @After
@@ -72,7 +74,7 @@ public class ApiIntegrationTest {
 
     @Test
     public void options_requests_are_available_to_everyone() {
-        when().options("/oauth/token")
+        when().options("/token")
                 .then().statusCode(HttpStatus.OK.value());
     }
 

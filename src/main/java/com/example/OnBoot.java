@@ -47,7 +47,7 @@ public class OnBoot implements ApplicationRunner {
     }
 
     private void seedDatabase() {
-        userRepository.save(new User(encoder.encode("password"), "Chuck", "Norris", "chuck@norris.com"));
+        userRepository.save(new User(encoder.encode("password"), "Chuck", "Norris", "chuck@example.com"));
         userRepository.save(new User(encoder.encode("password"), "Admin", "User", "admin@example.com"));
         for(int i = 1; i <= 10; i++) {
             Name name = faker.name();

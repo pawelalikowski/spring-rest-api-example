@@ -10,4 +10,4 @@ Simple REST API example application build with Spring Boot and secured with Spri
 
 #### Calling API: 
 You can import [Postman](https://www.getpostman.com/) collection from postman directory to se some examples.   
-API endpoints are secured with spring-security. To access secured endpoints you must call /oauth/token endpoint first to get access token.
+API endpoints are secured with spring-security. To access secured endpoints you must call /token endpoint first to get access token.

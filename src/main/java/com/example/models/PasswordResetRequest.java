@@ -1,9 +1,8 @@
 package com.example.models;
 
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.Min;
 
 public class PasswordResetRequest {
     @NotBlank
@@ -14,7 +13,7 @@ public class PasswordResetRequest {
     private String token;
 
     @NotBlank
-    @Min(8)
+    @Length(min = 8)
     private String password;
 
     public PasswordResetRequest() {

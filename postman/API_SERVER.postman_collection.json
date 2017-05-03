@@ -42,7 +42,7 @@
 			]
 		},
 		{
-			"name": "Get Token http://localhost:8080/oauth/token",
+			"name": "Get Token http://localhost:8080/token",
 			"event": [
 				{
 					"listen": "test",
@@ -65,7 +65,7 @@
 				}
 			],
 			"request": {
-				"url": "http://localhost:8080/oauth/token",
+				"url": "http://localhost:8080/token",
 				"method": "POST",
 				"header": [
 					{
@@ -107,7 +107,7 @@
 			"response": []
 		},
 		{
-			"name": "OPTIONS Token http://localhost:8080/oauth/token",
+			"name": "OPTIONS Token http://localhost:8080/token",
 			"event": [
 				{
 					"listen": "test",
@@ -121,7 +121,7 @@
 				}
 			],
 			"request": {
-				"url": "http://localhost:8080/oauth/token",
+				"url": "http://localhost:8080/token",
 				"method": "OPTIONS",
 				"header": [],
 				"body": {

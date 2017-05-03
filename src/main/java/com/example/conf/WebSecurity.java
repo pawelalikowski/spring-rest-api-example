@@ -42,7 +42,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //        return new WebMvcConfigurerAdapter() {
 //            @Override
 //            public void addCorsMappings(CorsRegistry registry) {
-//                registry.addMapping("/oauth/token").allowedOrigins("*");
+//                registry.addMapping("/token").allowedOrigins("*");
 //            }
 //        };
 //    }
