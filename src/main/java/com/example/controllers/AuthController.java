@@ -33,9 +33,9 @@ public class AuthController {
 
     @RequestMapping(value = "/auth/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@RequestBody @Valid User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) throw new InvalidRequestException("Invalid user", bindingResult);
+        if (bindingResult.hasErrors()) throw new InvalidRequestException("InvalidUser", bindingResult);
         authService.register(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/auth/confirm", method = RequestMethod.GET)

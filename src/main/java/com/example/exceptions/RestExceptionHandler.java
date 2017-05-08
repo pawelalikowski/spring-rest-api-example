@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,16 @@ import java.util.List;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler({ RestException.class })
+    protected ResponseEntity<Object> handleRestException(RuntimeException e, WebRequest request) {
+        RestException re = (RestException) e;
+        ErrorResource error = new ErrorResource(re.getHttpStatus(), re.getCode(), re.getMessage());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return handleExceptionInternal(e, error, headers, re.getHttpStatus(), request);
+    }
 
     @ExceptionHandler({ InvalidRequestException.class })
     protected ResponseEntity<Object> handleInvalidRequest(RuntimeException e, WebRequest request) {
@@ -44,6 +55,17 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ IllegalArgumentException.class })
     protected ResponseEntity<Object> handleIllegalArgument(RuntimeException e, WebRequest request) {
         IllegalArgumentException ire = (IllegalArgumentException) e;
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResource error = new ErrorResource(status, "InvalidRequest", ire.getMessage());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return handleExceptionInternal(e, error, headers, status, request);
+    }
+
+    @ExceptionHandler({ InvalidTokenException.class })
+    protected ResponseEntity<Object> handleInvalidToken(RuntimeException e, WebRequest request) {
+        InvalidTokenException ire = (InvalidTokenException) e;
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorResource error = new ErrorResource(status, "InvalidRequest", ire.getMessage());
         HttpHeaders headers = new HttpHeaders();

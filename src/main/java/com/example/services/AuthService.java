@@ -2,6 +2,8 @@ package com.example.services;
 
 import com.example.dictionaries.TokenStatus;
 import com.example.dictionaries.TokenType;
+import com.example.exceptions.RestError;
+import com.example.exceptions.RestException;
 import com.example.factories.ConfirmationTokenFactory;
 import com.example.factories.MailMessageFactory;
 import com.example.models.ConfirmationToken;
@@ -42,7 +44,9 @@ public class AuthService {
 
     @Transactional
     public void register(final User user) {
-        userRepository.findByEmail(user.getEmail()).ifPresent(user1 -> {throw new IllegalArgumentException(user1.getEmail() + " address taken");});
+        userRepository.findByEmail(user.getEmail()).ifPresent(user1 -> {
+            throw new RestException(RestError.EmailTaken, user1.getEmail() + " address already exists in our database.");
+        });
         ConfirmationToken token = tokenFactory.create(user, TokenType.EMAIL_CONFIRMATION);
         user.setPassword(encoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -60,14 +64,18 @@ public class AuthService {
     @Transactional
     public void confirm(String email, String token) {
         verifyToken(token, email, TokenType.EMAIL_CONFIRMATION);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Bad username"));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new RestException(RestError.NonExistentUser)
+        );
         user.setActive(true);
         userRepository.save(user);
     }
 
     @Transactional
     public void requestPasswordReset(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User does not exists"));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new RestException(RestError.NonExistentUser)
+        );
         ConfirmationToken token = tokenFactory.create(user, TokenType.PASSWORD_RESET);
         tokenRepository.save(token);
         mailService.sendMail(mailMessageFactory.create()
@@ -83,15 +91,20 @@ public class AuthService {
     @Transactional
     public void passwordReset(PasswordResetRequest passwordResetRequest) {
         verifyToken(passwordResetRequest.getToken(), passwordResetRequest.getEmail(), TokenType.PASSWORD_RESET);
-        User user = userRepository.findByEmail(passwordResetRequest.getEmail()).orElseThrow(() -> new IllegalArgumentException("User does not exists"));
+        User user = userRepository.findByEmail(passwordResetRequest.getEmail()).orElseThrow(() ->
+                new RestException(RestError.NonExistentUser)
+        );
         user.setPassword(encoder.encode(passwordResetRequest.getPassword()));
         userRepository.save(user);
     }
 
     private void verifyToken(String token, String email, TokenType tokenType) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("Email not found: " + email));
+        User user = userRepository.findByEmail(email).orElseThrow(() ->
+                new RestException(RestError.EmailNotFound, "Email not found: " + email)
+        );
         ConfirmationToken confirmationToken = tokenRepository.findByUserAndTokenAndTokenType(user, token, tokenType).orElseThrow(() -> new IllegalArgumentException("Bad token"));
-        if ( ! TokenStatus.PENDING.equals(confirmationToken.getTokenStatus())) throw new IllegalStateException("Token is " + confirmationToken.getTokenStatus().getValue());
+        if ( ! TokenStatus.PENDING.equals(confirmationToken.getTokenStatus()))
+            throw new RestException(RestError.IllegalTokenStatus, "Token is " + confirmationToken.getTokenStatus().getValue());
         confirmationToken.setTokenStatus(TokenStatus.COMPLETED);
         tokenRepository.save(confirmationToken);
     }
