@@ -3,3 +3,14 @@ image: openjdk:8
 build:
   script:
     - ./gradlew test -i
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploy to staging server"
+  environment:
+    name: staging
+    url: https://staging.example.com
+  only:
+  - develop
+  - master
