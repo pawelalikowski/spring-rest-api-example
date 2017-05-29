@@ -2,6 +2,7 @@ package com.example.services;
 
 import com.example.dictionaries.TokenStatus;
 import com.example.dictionaries.TokenType;
+import com.example.exceptions.RestException;
 import com.example.factories.ConfirmationTokenFactory;
 import com.example.factories.MailMessageFactory;
 import com.example.models.ConfirmationToken;
@@ -106,7 +107,7 @@ public class AuthServiceTest {
         assertEquals(user, unsavedUser);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = RestException.class)
     public void confirm_method_should_throw_exception_when_user_not_found() throws Exception {
         when(userRepository.findByEmail("fakeUser@example.com")).then(invocation -> Optional.empty());
         this.authService.confirm("fakeUser@example.com", confirmationToken.getToken());
@@ -123,9 +124,10 @@ public class AuthServiceTest {
         this.authService.confirm(savedUser.getEmail(), "fakeToken");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = RestException.class)
     public void confirm_method_should_throw_exception_when_token_status_is_not_pending() throws Exception {
-        when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, confirmationToken.getToken(), TokenType.EMAIL_CONFIRMATION)).then(invocation -> Optional.ofNullable(expiredConfirmationToken));
+        when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, confirmationToken.getToken(),
+                TokenType.EMAIL_CONFIRMATION)).then(invocation -> Optional.ofNullable(expiredConfirmationToken));
         this.authService.confirm(savedUser.getEmail(), confirmationToken.getToken());
     }
 
@@ -175,9 +177,10 @@ public class AuthServiceTest {
         verify(userRepository).save(savedUser);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = RestException.class)
     public void passwordReset_should_fail_when_token_status_is_not_pending() {
-        when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, confirmationToken.getToken(), TokenType.PASSWORD_RESET)).then(invocation -> Optional.ofNullable(expiredPasswordToken));
+        when(tokenRepository.findByUserAndTokenAndTokenType(savedUser, confirmationToken.getToken(),
+                TokenType.PASSWORD_RESET)).then(invocation -> Optional.ofNullable(expiredPasswordToken));
         this.authService.passwordReset(passwordResetRequest);
         verify(userRepository, never()).save(userArgumentCaptor.capture());
     }

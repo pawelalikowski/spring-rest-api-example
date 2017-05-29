@@ -95,14 +95,14 @@ public class ApiIntegrationTest {
     public void auth_register_should_be_available_to_everyone() {
         given().contentType(ContentType.JSON).body(gson.toJson(user1))
                 .when().post("/auth/register")
-                .then().statusCode(HttpStatus.CREATED.value());
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     @Test
     public void auth_register_should_check_is_email_taken() {
         given().contentType(ContentType.JSON).body(gson.toJson(user2))
                 .when().post("/auth/register")
-                .then().statusCode(HttpStatus.CREATED.value());
+                .then().statusCode(HttpStatus.NO_CONTENT.value());
        given().contentType(ContentType.JSON).body(gson.toJson(user2))
                 .when().post("/auth/register")
                 .then().statusCode(HttpStatus.BAD_REQUEST.value());

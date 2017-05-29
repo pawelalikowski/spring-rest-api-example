@@ -74,17 +74,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(e, error, headers, status, request);
     }
 
-//    @ExceptionHandler({ Exception.class })
-//    public ResponseEntity<Object> handleException(Exception e, WebRequest request) {
-//        List<FieldErrorResource> fieldErrorResources = new ArrayList<>();
-//
-//        HttpStatus status = HttpStatus.BAD_REQUEST;
-//        ErrorResource error = new ErrorResource(status, "InvalidRequest", ire.getMessage());
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//        return handleExceptionInternal(e, error, headers, status, request);
-//    }
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<Object> handleOtherException(Exception e, WebRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorResource error = new ErrorResource(status, "InternalServerError", "Internal Server Error");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        logger.error(e.getMessage());
+        e.printStackTrace();
+
+        return handleExceptionInternal(e, error, headers, status, request);
+    }
 
 }

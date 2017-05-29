@@ -57,7 +57,7 @@ public class AuthControllerTest {
     public void auth_register_should_call_auth_service_register() throws Exception {
         this.mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(user)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isNoContent());
         user.setActive(false);
         verify(authService).register(user);
     }

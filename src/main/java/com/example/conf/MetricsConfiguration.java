@@ -23,6 +23,9 @@ public class MetricsConfiguration {
     @Value("${app.metrics.graphite.period}")
     private Integer period;
 
+    @Value("${app.metrics.graphite.enabled}")
+    private Boolean enabled;
+
     @Autowired
     public MetricsConfiguration(MetricRegistry metricRegistry, GraphiteReporter reporter) {
         this.metricRegistry = metricRegistry;
@@ -31,7 +34,9 @@ public class MetricsConfiguration {
 
     @PostConstruct
     public void startGraphiteReporter() {
-        reporter.start(period, TimeUnit.SECONDS);
+        if (enabled) {
+            reporter.start(period, TimeUnit.SECONDS);
+        }
     }
 
     @PostConstruct

@@ -39,6 +39,7 @@ github:
 app:
   metrics:
     graphite:
+      enabled: false
       hostname: '127.0.0.1'
       port: 2003
       period: 10
