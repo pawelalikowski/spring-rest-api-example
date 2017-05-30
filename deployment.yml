@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: booking-api
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: booking-api
+    spec:
+      containers:
+      - name: booking-api
+        image: registry.gitlab.com/sotomski/api
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+        - name: registry.gitlab.com
